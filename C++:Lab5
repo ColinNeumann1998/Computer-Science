@@ -1,0 +1,213 @@
+// Colin Neumann
+// March 18th, 2019
+
+#include <iostream>
+#include <string>
+#include <vector>
+//#include "family.cpp"
+
+using namespace std;
+void addFamily(vector <family> &familys);
+int searchForFamily(vector <family> &familys, string name);
+void deleteFamily(vector <family> &familys, string name);
+void printall(vector <family> &familys);
+void printFamily(vector <family> &familys, string name);
+void menu();
+
+const int numofparents = 2;
+const int maxnumofkids = 10;
+
+struct person {
+	string fname;
+	string lname;
+	int age;
+};
+class family {
+private:
+	string name;
+	person parents[numofparents];
+	person kids[maxnumofkids];
+	int numOfP = 0;//current number of parrents
+	int numOfC = 0; // current number of kids
+public:
+	family() {
+	}
+	void addFamilyMember() {
+		string input;
+		int age;
+		cout << "Would you like to add a parent or a child: ";
+		cin >> input;
+		if (input == "parent") {
+
+			cout << "Enter your parent first name: ";
+			cin >> input;
+			parents[numOfP].fname = input;
+			cout << "Enter your parents last name: ";
+			cin >> input;
+			parents[numOfP].lname = input;
+			name = input;
+			cout << "Enter your parents age: ";
+			cin >> age;
+			parents[numOfP].age = age;
+
+
+			numOfP += 1;
+		}
+		else if (input == "child") {
+			cout << "Enter your childs first name: ";
+			cin >> input;
+			kids[numOfC].fname = input;
+			cout << "Enter your childs last name: ";
+			cin >> input;
+			kids[numOfC].lname = input;
+			cout << "Enter your childs age: ";
+			cin >> age;
+			kids[numOfC].age = age;
+		}
+		else {
+			cout << "Invalid choice";
+		}
+	}
+	person getMember(int p, string choice) {
+		if (choice == "parent") {
+			return parents[p];
+		}
+		else if (choice == "child") {
+			return kids[p];
+		}
+
+
+	}
+	int getParentSize() {
+		return numOfP;
+	}
+	int getKidSize() {
+		return numOfC;
+	}
+	string getName() {
+
+		return name;
+	}
+
+};
+int main() {
+	vector <family> familys;
+
+	int i;
+	string input;
+	do {
+		menu;
+		cout << endl;
+		cin >> i;
+		switch (i)
+		{
+		case 1:
+			addFamily(familys);
+			break;
+		case 2:
+			cout << "What family would you like to delete: ";
+			cin >> input;
+
+			deleteFamily(familys, input);
+			break;
+		case 3:
+			cout << "What family would you like to display: ";
+			cin >> input;
+			printFamily(familys, input);
+			break;
+		case 4:
+			printall(familys);
+			break;
+		case 5:
+			cout << "Ending...";
+			break;
+		default:
+			cout << "invlaid choice";
+			break;
+		}
+	} while (i != 5);
+	system("pause");
+}
+
+void addFamily(vector <family> &familys) {
+	family one;
+	string choice;
+	do {
+		cout << "Would you like to enter a family member?: ";
+		cin >> choice;
+		if (choice == "yes") {
+			one.addFamilyMember();
+		}
+	} while (choice != "no");
+
+	familys.push_back(one);
+}
+int searchForFamily(vector <family> &familys, string name) {
+	string temp;
+	int returned = -1;
+	int size = familys.size();
+	for (int i = 0; i < size; i++) {
+		temp = familys[i].getName();
+		if (temp == name) {
+			returned = i;
+		}
+	}
+
+	return returned;
+}
+
+void deleteFamily(vector <family> &familys, string name) {
+	int spot;
+	spot = searchForFamily(familys, name);
+	familys.erase(familys.begin() + spot);
+}
+void printFamily(vector <family> &familys, string name) {
+	int spot;
+	int maxKid;
+	int maxParent;
+	spot = searchForFamily(familys, name);
+
+	maxKid = familys[spot].getKidSize();
+	maxParent = familys[spot].getParentSize();
+	for (int i = 0; i < maxParent; i++) {
+		cout << familys[spot].getMember(i, "parent").fname << endl;
+		cout << familys[spot].getMember(i, "parent").lname << endl;
+		cout << familys[spot].getMember(i, "parent").age << endl;
+	}
+	for (int j = 0; j < maxKid; j++) {
+		cout << familys[spot].getMember(j, "child").fname << endl;
+		cout << familys[spot].getMember(j, "child").lname << endl;
+		cout << familys[spot].getMember(j, "child").age << endl;
+	}
+
+}
+void printall(vector <family> &familys) {
+
+
+	int maxKid;
+	int maxParent;
+	int size = familys.size();
+	for (int spot = 0; spot < size; spot++) {
+
+		maxKid = familys[spot].getKidSize();
+		maxParent = familys[spot].getParentSize();
+		for (int i = 0; i < maxParent; i++) {
+			cout << familys[spot].getMember(i, "parent").fname << endl;
+			cout << familys[spot].getMember(i, "parent").lname << endl;
+			cout << familys[spot].getMember(i, "parent").age << endl;
+		}
+		for (int j = 0; j < maxKid; j++) {
+			cout << familys[spot].getMember(j, "child").fname << endl;
+			cout << familys[spot].getMember(j, "child").lname << endl;
+			cout << familys[spot].getMember(j, "child").age << endl;
+		}
+	}
+}
+
+void menu()
+{
+	cout << "1. Add Family" << endl;
+	cout << "2. Delete Family" << endl;
+	cout << "3. Display a Family" << endl;
+	cout << "4. Show all Families" << endl;
+}
