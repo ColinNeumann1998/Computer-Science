@@ -1,0 +1,262 @@
+// Colin Neumann
+// LAB 7 CMSY-171
+// March 1, 2019
+
+// Headers
+#include<iostream>
+#include<iomanip>
+#include<vector>
+#include<string>
+
+using namespace std;
+
+//Constant Definitions
+const int HOURLY = 1;
+const int SALARIED = 2;
+
+//Base Class Employee
+class Employee
+{
+private:
+	int empID;
+public:
+	Employee();
+	Employee(int employeeID);
+	int getEmpID() const;
+	virtual void printPay() = 0;
+};
+
+//Derived Class HourlyEmployee
+class HourlyEmployee : public Employee
+{
+private:
+	double hours;
+	double payRate;
+public:
+	HourlyEmployee() : Employee() {};
+	//Constructor will pass empID as an argument to the base class constructor
+	//Then it will assign the value of the other two arguments to its attributes
+	HourlyEmployee(int empID, double hrs, double payRatez);
+	double getHours() const;
+	double getPayRate() const;
+	void printPay() override;
+	~HourlyEmployee();
+};
+
+//Derived Class SalariedEmployee
+class SalariedEmployee : public Employee
+{
+private:
+	double salary;
+public:
+	SalariedEmployee() : Employee() {};
+	SalariedEmployee(int employeeID, double SAL);
+	double getSalary() const;
+	void printPay() override;
+};
+
+//Function Prototypes
+void getInput(vector <Employee *> & Ve);
+void printList(const vector <Employee *> & Ve);
+void menu();
+void verifyInput(int &inputData);
+void verifyInput(double &inputData);
+
+// Main method
+int main()
+{
+	vector <Employee *> Ve;
+	getInput(Ve);
+	printList(Ve);
+	cout << "Lab 7 completed by: Colin Neumann " << endl;
+	cout << endl;
+	//if (Ve.size() > 0)
+	//{
+	//	int temp = Ve[0]->getEmpID();
+	//	int *tempPtr = &temp;
+	//	cout << *tempPtr;
+	//}
+	system("pause");
+	return 0;
+}
+
+//Contains a loop that will give the user an option to enter information about an hourly
+//employee or a salaried employee. Depending on the user�s choice, collect the appropriate
+//input information from the user and use this information to dynamically construct a derived
+//class object.Assign the address of the dynamically created derived class object to an element of the Ve vector. 
+//(Note : In this step, you are assigning the addresses of derived class objects to base class pointers).
+void getInput(vector <Employee *> & Ve)
+{
+	//Variables for input
+	int empID;
+	double hours;
+	double payRate;
+	double salary;
+	int choice;
+
+	do
+	{
+		menu();
+		cin >> choice;
+		switch (choice)
+		{
+		case HOURLY:
+		{
+			cout << endl;
+			cout << "Enter the ID: ";
+			cin >> empID;
+			verifyInput(empID);
+			cout << "Enter the number of hours worked: ";
+			cin >> hours;
+			verifyInput(hours);
+			cout << "Enter the pay rate: ";
+			cin >> payRate;
+			verifyInput(payRate);
+			Ve.push_back(new HourlyEmployee(empID, hours, payRate));
+			cout << endl;
+			break;
+		}
+		case SALARIED:
+		{
+			cout << endl;
+			cout << "Enter the ID: ";
+			cin >> empID;
+			verifyInput(empID);
+			cout << "Enter the salary: ";
+			cin >> salary;
+			verifyInput(salary);
+			// cout << empID << endl;
+			SalariedEmployee temp(empID, salary);
+			//cout << temp.getEmpID() << endl;
+			//cout << temp.getSalary() << endl;
+			Ve.push_back(new SalariedEmployee(empID, salary));
+			//cout << Ve[0]->getEmpID() << '\n' << endl;
+			cout << endl;
+			break;
+		}
+
+		}
+	} while (choice != 3);
+	cout << endl;
+}
+
+Employee::Employee()
+{
+	//Default Constructor
+}
+
+Employee::Employee(int employeeID)
+{
+	empID = employeeID;
+}
+
+int Employee::getEmpID() const
+{
+	//return the empID
+	return empID;
+}
+
+//Default constructor for HourlyEmployee
+HourlyEmployee::HourlyEmployee(int employeeID, double hrs, double payRatez) : Employee(employeeID)
+{
+	hours = hrs;
+	payRate = payRatez;
+}
+
+//Public function that will return the hours worked
+double HourlyEmployee::getHours() const
+{
+	return hours;
+}
+
+//Public function that will return the payRate
+double HourlyEmployee::getPayRate() const
+{
+	return payRate;
+}
+
+HourlyEmployee::~HourlyEmployee()
+{
+
+}
+//Overridden Public function that will print the hourly employee's empID and weekly pay (hours * payRate)
+//setprecision will be two places after the decimal
+void HourlyEmployee::printPay()
+{
+	double weeklyPay = hours * payRate;
+	cout << fixed << setprecision(2);
+	cout << "The pay for the salaried employee with ID number: ";
+	cout << getEmpID() << " is $ " << weeklyPay << endl;
+}
+
+
+/*SalariedEmployee::SalariedEmployee()
+{
+//stuff
+}*/
+
+//Constructor will pass employee ID argument to base class constructor
+//Then it will assign the value of the other arguments to its attribute
+SalariedEmployee::SalariedEmployee(int employeeID, double SAL) : Employee(employeeID)
+{
+	salary = SAL;
+}
+
+//Public function that will return salary
+double SalariedEmployee::getSalary() const
+{
+	return salary;
+}
+
+//Print pay for the Salaried Employee
+void SalariedEmployee::printPay()
+{
+	double weeklyPay = salary / 52;
+	cout << fixed << setprecision(2);
+	cout << "The pay for the salaried employee with ID number: ";
+	cout << getEmpID() << " is $ " << weeklyPay << endl;
+}
+
+//Simply loop through the elements of the Ve vector and call the printPay() function of
+//each of the dynamically allocated objects. (Note: In this step, you see the polymorphism in
+//action. That is, depending on the type of the object there will be dynamic binding and the
+//appropriate version of the printPay() function will execute).
+void printList(const vector <Employee *> & Ve)
+{
+	int SIZE = Ve.size();
+	for (int i = 0; i < SIZE; i++)
+	{
+		Ve[i]->printPay();
+	}
+
+}
+
+void menu()
+{
+	cout << "Enter 1 for Hourly Employee " << endl;
+	cout << "Enter 2 for Salaried Employee " << endl;
+	cout << "Enter 3 to stop: ";
+}
+
+//Numeric Input Validation for employee ID
+void verifyInput(int &inputData)
+{
+	while (inputData < 0 || inputData > 9999)
+	{
+		cout << "Not a valid option! Please enter in a numeric value between 0 and 9999" << endl;
+		cin >> inputData;
+		cin.ignore();
+		cout << endl;
+	}
+}
+
+void verifyInput(double &inputData)
+{
+	while (inputData < 0.00 || inputData > 350000.00)
+	{
+		cout << "Not a valid option! Please enter in a numeric value between 0.00 and 350,000.00" << endl;
+		cin >> inputData;
+		cin.ignore();
+		cout << endl;
+	}
+}
