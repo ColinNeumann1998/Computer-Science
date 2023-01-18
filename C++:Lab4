@@ -1,0 +1,173 @@
+/* *** Colin Neumann ***
+Lab #4
+*/
+#include <iostream>
+#include<iomanip>
+#include <fstream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+const int BUFF_SIZE = 100;
+const char NEW_LINE = '\n';
+const char TAB_LINE = '\t';
+const int Description_Size = 30;
+const double SizeofInventory = (Description_Size + sizeof(int), + sizeof(double));
+
+struct Inventory
+{
+	char desc[Description_Size];
+	int qty;
+	double wholeSaleCost;
+};
+// Function prototypes
+void addRecord(fstream &);
+void viewRecord(fstream &);
+void changeRecord(fstream &);
+
+int main()
+{
+	fstream inventoryFile;
+	int choice;
+	cout << setprecision(2) << fixed;
+	do
+	{
+		// Display the menu.
+		cout << "\n1. Add a new record\n";
+		cout << "2. View an existing record by record number\n";
+		cout << "3. Change an existing record\n";
+		cout << "4. Exit\n\n";
+		do
+		{
+			cout << "Enter your choice (1-4): ";
+			cin >> choice;
+		} while (choice < 1 || choice > 4);
+		// Process the selection.
+		switch (choice)
+		{
+			// Choice 1 is to add a record.
+		case 1:
+			addRecord(inventoryFile);
+			break;
+			// Choice 2 is to view a record.
+		case 2:
+			viewRecord(inventoryFile);
+			break;
+			// Choice 3 is to change a record.
+		case 3:
+			changeRecord(inventoryFile);
+		}
+	} while (choice != 4);
+	cout << "Thank you for visiting Colin's Store." << endl;
+	system("pause");
+	return 0;
+}
+
+void addRecord(fstream &inventoryFile)
+{
+	vector <Inventory> UserInput;
+	Inventory temp;
+	inventoryFile.open("Inventory_File.txt", ios::out | ios::binary | ios::app);
+	cout << "Enter the following inventory data: " << endl;
+	cout << "Description: ";
+	cin.ignore();
+	cin.get(temp.desc, 30);
+	cin.ignore(BUFF_SIZE, NEW_LINE);
+	cout << "Quantity: ";
+	cin >> temp.qty;
+	if (temp.qty < 1)
+	{
+		cout << "The quantity needs to be greater than zero. Please enter a quantity. ";
+		cin >> temp.qty;
+	}
+	cin.ignore(BUFF_SIZE, NEW_LINE);
+	cout << "Retail price: ";
+	cin >> temp.wholeSaleCost;
+	if (temp.wholeSaleCost < 0)
+	{
+		cout << "The retail price needs to be greater than zero. Please enter the retail price. ";
+		cin >> temp.wholeSaleCost;
+	}
+	cin.ignore(BUFF_SIZE, NEW_LINE);
+
+	inventoryFile.write(reinterpret_cast<char *>(&temp), SizeofInventory);
+
+	// Closes file
+	cout << "record written to file.";
+	inventoryFile.close();
+
+}
+
+void viewRecord(fstream &inventoryFile)
+{
+	Inventory temp;
+	int RecordNumber;
+	inventoryFile.open("c:\\temp\\Inventory_File.txt", ios::in | ios::binary);
+	if (inventoryFile.fail())
+	{
+		inventoryFile.open("Inventory_File.txt", ios::out);
+		addRecord(inventoryFile);
+	}
+	else
+	{
+		inventoryFile.close();
+		cout << "Enter the record number of the item: ";
+		cin >> RecordNumber;
+		int offset = RecordNumber * SizeofInventory;
+
+		inventoryFile.seekg(offset, ios::beg);
+		inventoryFile.read(reinterpret_cast<char *>(&temp), SizeofInventory);
+
+		cout << "Description: " << temp.desc;
+		cout << NEW_LINE;
+		cout << "Quantity: " << temp.qty;
+		cout << NEW_LINE;
+		cout << "Retail Price: " << temp.wholeSaleCost;
+		cout << NEW_LINE;
+
+
+	}
+}
+
+void changeRecord(fstream &inventoryFile)
+{
+	Inventory temp;
+	int RecordNumber;
+	inventoryFile.open("c:\\temp\\Inventory_File.txt", ios::in | ios::binary);
+
+	cout << "Enter the record number of the item: ";
+	cin >> RecordNumber;
+	int offset = RecordNumber * SizeofInventory;
+
+	inventoryFile.seekp(offset, ios::beg);
+	inventoryFile.read(reinterpret_cast<char *>(&temp), SizeofInventory);
+
+	cout << "Enter the following inventory data: " << endl;
+	cout << "Description: ";
+	cin.ignore();
+	cin.get(temp.desc, 30);
+	cin.ignore(BUFF_SIZE, NEW_LINE);
+	cout << "Quantity: ";
+	cin >> temp.qty;
+	if (temp.qty < 1)
+	{
+		cout << "The quantity needs to be greater than zero. Please enter a quantity. ";
+		cin >> temp.qty;
+	}
+	cin.ignore(BUFF_SIZE, NEW_LINE);
+	cout << "Retail price: ";
+	cin >> temp.wholeSaleCost;
+	if (temp.wholeSaleCost < 0)
+	{
+		cout << "The retail price needs to be greater than zero. Please enter the retail price. ";
+		cin >> temp.wholeSaleCost;
+	}
+	cin.ignore(BUFF_SIZE, NEW_LINE);
+
+	inventoryFile.write(reinterpret_cast<char *>(&temp), SizeofInventory);
+
+	// Closes file
+	cout << "record written to file.";
+	inventoryFile.close();
+}
