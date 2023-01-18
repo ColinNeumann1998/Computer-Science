@@ -1,0 +1,103 @@
+// Colin Neumann
+// Cybersecurity Major
+// 2/11/2019
+// Lab01 Part A
+
+#include <iostream>
+#include <string>
+#include <iomanip>
+#include <vector>
+#include <cmath>
+
+using namespace std;
+
+// Variables
+
+const int Buff_Size = 100;			// Clearing out buffer
+const int Max_Zoo = 5;				// Maximum animals allowed in zoo, if user doesn't opt out before this
+const char NEW_LINE = '\n';
+const char NEW_TAB = '\t';
+const int COLUMN = 1;
+const int ROW = 5;
+const string OrderofAnimals[] = { "1st", "2nd", "3rd", "4th", "5th" };
+
+
+// Prototypes
+void welcome();
+void animals(string Animalname[], int Animalage[ROW][COLUMN], int &count);
+void print_data(string Animalname[], int Animalage[ROW][COLUMN], int &count);
+
+
+int main()
+{
+	int count = 0;
+	string Animalname[Max_Zoo];
+	int Animalage[ROW][COLUMN];
+
+	welcome();
+	animals(Animalname, Animalage, count);
+	print_data(Animalname, Animalage, count);
+
+}
+
+void welcome()
+{
+	cout << "Colin Neumann" << endl;
+	cout << "Major: Cybersecurity" << endl;
+	cout << "Starting Lab01" << endl;
+	cout << endl;
+}
+void animals(string Animalname[], int Animalage[ROW][COLUMN], int &count)
+{
+	for (int R = 0; R < ROW; R++)
+	{
+		string animal;
+		cout << "Please enter animal " << OrderofAnimals[R] << " name: ";
+		getline(cin, animal);
+
+		if (animal == "Stop" || animal == "STOP" || animal == "stop")
+		{
+			return;
+		}
+		else
+		{
+			Animalname[R] = animal;
+		}
+
+		for (int C = 0; C < COLUMN; C++)
+		{
+			cout << "Please enter animal " << OrderofAnimals[R] << " age: ";
+			cin >> Animalage[R][C];
+			cout << endl;
+			cin.ignore(Buff_Size, '\n');
+			++count;
+		}
+	}
+	cout << endl;
+
+}
+
+void print_data(string Animalname[], int Animalage[ROW][COLUMN], int &count)
+{
+	cout << "lab01 by Colin Neumann  Cybersecurity";
+	cout << endl;
+	cout << endl;
+	cout << "Animals" << endl;
+	cout << "#" << NEW_TAB << "Name" << NEW_TAB << "age" << endl;
+
+	for (int R = 0; R < count; R++)
+	{
+		cout << R;
+		cout << NEW_TAB;
+		cout << Animalname[R];
+		cout << NEW_TAB;
+
+		for (int C = 0; C < COLUMN; C++)
+		{
+			cout << Animalage[R][C];
+		}
+		cout << endl;
+	}
+	cout << system("pause");
+
+}
