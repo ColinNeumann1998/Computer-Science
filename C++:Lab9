@@ -1,0 +1,107 @@
+#include <iostream>
+
+using namespace std;
+
+struct Node
+{
+	int data; //the data part of the node
+	Node *next; //Pointer to the next node
+};
+
+Node *head = NULL;
+
+int getData()
+{
+	int data;
+	cout << "Input an integer as data: ";	// Ask the user for an integer
+	cin >> data;	// User enters the data integer
+	return data;	// Returns the data
+}
+
+void addData(Node *targetNode, int data)
+{
+	targetNode->data = data; //one line code that adds data to a node
+}
+
+void createNewNode(Node *prevNode)
+{
+	Node *newNode = new Node;
+	addData(newNode, getData()); //storing data to the new node
+								 //2 lines code to properly set the pointers for the previous and new node
+	prevNode->next = newNode;	 // prevNode is pointing to the newNode
+	newNode->next = NULL;		 // Automatically set the newNode to the point at null
+}
+
+void createList(int total)
+{
+	if (total == 0)
+		return;
+	Node *Current = head = new Node; // Head node is the first node of the list
+	addData(Current, getData());	 // This is calling the getData function and taking that data as an input for the current node
+	Current->next = NULL;			 // This is setting the value of 'next' in the current node to Null
+	if (total >= 2)
+	{
+		for (int i = 1; i<total; i++) //loop to add total-1 nodes to the list using the function createNode()
+		{
+			createNewNode(Current);
+			Current = Current->next;	// Assigning the 'next' value as the newNode, created in 'createNewNode'
+		}
+	}
+
+}
+
+void showList()
+{
+	Node *Current = head;
+	cout << "Showing the linked list:" << endl;
+	if (Current == NULL)
+	{
+		cout << "Empty list!" << endl;
+		return;
+	}
+	while (Current != NULL)
+	{
+		cout << Current->data << " ";
+		Current = Current->next; //Now, current pointer is pointing to its next node
+	}
+	cout << endl;
+}
+
+void selectionSort()
+{
+	Node *selectedNode = head;
+	if (head == NULL)return;
+	//code that traverses the linked list and compares the data of the nodes to find the minimum and appropriately set minimumData and minimumNode
+	while (selectedNode->next != NULL)
+	{
+		Node *currentNode = selectedNode;	// The currentNode is set equal to the selectNode
+		Node *minimumNode = currentNode;	// Setting a value for the smallest node in order to sort
+		int minimumData = currentNode->data;	// Set minimumData equal to teh data stored in our starting currentNode
+		//currentNode=currentNode->next;
+		while (currentNode != NULL)		// So long as the currentNode doesn't point to NULL, run the loop
+		{
+			if (currentNode->data < minimumData)	// Compare the value of the currentNode to the current data within minimumData
+			{										// If the value within currentNode is smaller than minimumData's value, data the new minimumData.
+				minimumData = currentNode->data;
+				minimumNode = currentNode;
+			}
+			currentNode = currentNode->next;
+		}
+		int temp; //temporary variable to store data of a node
+				  //Code that sets up the data for "selectedNode" to the value of minimumNode and appropriately setting minimumNode
+		temp = selectedNode->data;
+		selectedNode->data = minimumData;
+		minimumNode->data = temp;
+		selectedNode = selectedNode->next; //moving to the next selectedNode
+	}
+}
+
+int main()
+{
+	createList(5);
+	showList();
+	selectionSort();
+	showList();
+	system("pause");
+	return 0;
+} 
