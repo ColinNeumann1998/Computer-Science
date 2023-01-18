@@ -1,0 +1,480 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <iomanip>
+using namespace std;
+
+//Global Constants
+const int Append = 1;
+const int Insert = 2;
+const int DeleteByIndex = 3;
+const int DeleteByName = 4;
+const int DeleteAll = 5;
+const int Display = 6;
+const int Reverse = 7;
+const int Modify = 8;
+const int Quit = 9;
+const char TAB = '\t';
+
+//Function prototypes
+void menu();
+int validate(int &, int, int);
+
+//Structure for a student
+struct student {
+	int ID;
+	string Name;
+	string Major;
+	int Age;
+	student * next;
+	student * prev;
+};
+
+//structure for the linkedlist to store students
+class LinkedList
+{
+private:
+	int size;
+	student * head;
+public:
+	LinkedList();
+	void appendNode(int, string, string, int);
+	void insertNode(int, string, string, int, int);
+	void changeNode(int);
+	void deleteNode(int);
+	void deleteNode(string);
+	void reverse();
+	void displayList() const;
+	void displayCount();
+	void deleteAll();
+	~LinkedList();
+};
+
+LinkedList::LinkedList()
+{
+	head = nullptr;
+
+}
+
+LinkedList::~LinkedList()
+{
+
+}
+
+void LinkedList::appendNode(int ID, string Name, string Major, int Age)
+{
+	student* newNode; //To point to a new node
+	student* nodePtr; //To move through the list
+
+	//Allocate a new node and store the attributes there
+	newNode = new student;
+	newNode->ID = ID;
+	newNode->Name = Name;
+	newNode->Major = Major;
+	newNode->Age = Age;
+
+	newNode->next = nullptr;
+	newNode->prev = nullptr;
+
+	//If there are no nodes in the list, make newNode the first node
+	if (!head) {
+		newNode->prev = nullptr;
+		head = newNode;
+		size++;
+	}
+	else //Otherwise, insert newNode at end
+	{
+		nodePtr = head; //Initialize nodePtr to head of list
+
+		while (nodePtr->next) //Find the last node in the list
+			nodePtr = nodePtr->next;
+		newNode->prev = nodePtr;
+		newNode->next = nullptr;
+		//Insert newNode as the last node
+		nodePtr->next = newNode;
+		size++;
+	}
+}
+
+
+void LinkedList::insertNode(int nID, string nName, string nMajor, int nAge, int loc) {
+	student * current = head;
+	student * next;
+	student * newstudent = new student;
+	newstudent->ID = nID; //initialize new node
+	newstudent->Name = nName;
+	newstudent->Major = nMajor;
+	newstudent->Age = nAge;
+	newstudent->prev = nullptr;
+	newstudent->next = nullptr;
+	if (!head) // if list is empty
+		head = newstudent;
+	else {
+		for (int i = 0; i < loc - 1; i++) {// loop to list index
+			if (i > 0) {
+				if (current != nullptr)
+					current = current->next;// will point to node before inserted node
+
+			}
+		}
+		if (current != nullptr) {
+
+			next = current->next; //point to next node
+			current->next = newstudent; //set previous node next pointer to new node
+			newstudent->next = next; //set pointers for new node
+			if (loc != 1) {
+				newstudent->prev = current;
+			}
+			else {
+				newstudent->prev = nullptr;
+				newstudent->next = head;
+				head->prev = newstudent;
+				head->next = next;
+				head = newstudent;
+			}
+			//newstudent->prev
+			if (next != nullptr) {
+				next->prev = newstudent;
+			}
+			size++;
+		}
+		else {
+			appendNode(nID, nName, nMajor, nAge);
+		}
+	}
+	cout << endl;
+}
+
+void LinkedList::changeNode(int ID)
+{
+	student * current = head;
+	int Age;
+
+	if (head == nullptr)
+	{
+		cout << "There are no students in the linked list to modify yet! " << endl;
+		cout << endl;
+		return;
+	}
+
+	while (current->next != nullptr)
+	{
+		if (current->ID == ID)
+		{
+			ID = current->ID;
+			cin.ignore();
+			cout << "Enter in the student's name: ";
+			getline(cin, current->Name);
+			cin.ignore();
+
+			cout << "Enter in the student's major: ";
+			getline(cin, current->Major);
+			cin.ignore();
+
+			cout << "Enter in the student's age: ";
+			cin >> current->Age;
+			Age = validate(Age, 0, 1000);
+			cout << endl;
+			return;
+		}
+		current = current->next;
+	}
+}
+
+void LinkedList::deleteNode(int loc) {
+	student * cur = head;
+	student * cur2; //Needed to remove from the middle.
+	int iterations = 0;
+	while (iterations != loc && cur != nullptr) {
+		cur = cur->next;
+		iterations++;
+	}
+	if (cur == nullptr) { //See if the index is in the list.
+		cout << "That index is not in the list." << endl;
+	}
+	else {
+		if (size == 1) {
+			head = nullptr;
+			size--;
+		}
+		else {
+			if (cur->prev == nullptr) { //deleting the head.
+				if (cur->next != nullptr) {
+					cur = cur->next;
+					head = cur; //Make the new head the next element.
+					cur->prev = nullptr; // Remove the reference to the previous head.
+					size--;
+				}
+				else {
+					head = nullptr;
+					size--;
+				}
+			}
+			else {
+				if (cur->next == nullptr) { //deleting the tail.
+					cur = cur->prev;
+					cur->next = nullptr; // Remove the reference to the previous tail.
+					size--;
+				}
+				else { //Deleting an element from the middle.
+					cur2 = cur->next; // Set to the element after
+					cur = cur->prev; // Set to the element before
+					cur->next = cur2; //cur should point next to the element after.
+					cur2->prev = cur; //cur2 should point behind to the element before.
+					size--;
+				}
+			}
+		}
+	}
+}
+
+
+
+void LinkedList::deleteNode(string nName)
+{
+	//student* newNode;
+	student * previousNode = nullptr; // to point to the previous node
+	student* nodePtr;  // to traverse the list
+
+	// If the list is empty do nothing
+	if (head)
+	{
+		// Determine if the first node is the one.
+		if (head->Name == nName)
+		{
+			nodePtr = head->next;
+			delete head;
+			head = nodePtr;
+			size--;
+		}
+
+		else
+		{
+			// Initialize nodePtr to head of list
+			nodePtr = head;
+
+			//Skip all nodes whose value is
+			// Not equal to string
+
+			while (nodePtr != nullptr && nodePtr->Name != nName)
+			{
+				previousNode = nodePtr;
+				nodePtr = nodePtr->next;
+			}
+
+			// If nodePtr is not at the end of the list,
+			// link the previous node to the node after
+			// nodePtr, then delete nodePtr
+			if (nodePtr)
+			{
+				previousNode->next = nodePtr->next;
+				delete nodePtr;
+				size--;
+			}
+
+		}
+	}
+
+}
+
+
+void LinkedList::reverse() {
+	student * cur = head;
+	student * tail;
+	student * temp;
+	while (cur->next != nullptr) { //Iterate through every value but the last in the list.
+		cur = cur->next;
+	}
+	tail = cur; //Store the pointer for the last (soon to be first) value in the list
+	cur = head;
+	while (cur != nullptr) { //Iterate through every value of the list.
+		temp = cur->next; //Switch cur->next and cur->prev
+		cur->next = cur->prev;
+		cur->prev = temp;
+		cur = cur->prev; //Iterate cur to the next value. This is the now previous value.
+	}
+	head = tail; //Set the head to the new start of the list.
+}
+
+void LinkedList::deleteAll() {
+	int tempsize = size;
+	for (int i = 0; i < tempsize; i++) {
+		deleteNode(0);
+	}
+}
+void LinkedList::displayList() const
+{
+	student *nodePtr;    //Node to traverse the list
+
+	if (!head)
+		return;
+
+	nodePtr = head;
+	while (head->Name != ""  && head->Age != 0 && nodePtr != nullptr)
+	{
+		// Display Contents of the Node
+		cout << "Student ID" << TAB  << "Student Name" << TAB << TAB << "Major" << TAB << TAB << "Student Age" << endl;
+		cout << nodePtr->ID << TAB << TAB << nodePtr->Name << TAB << TAB << TAB << nodePtr->Major << TAB << TAB << nodePtr->Age << endl;
+		nodePtr = nodePtr->next; //Traverse to the next node
+
+	}
+	cout << endl;
+
+}
+
+void LinkedList::displayCount()
+{
+	cout << "Colin Neumann has a linked list with " << size << " entries!";
+}
+
+void menu()
+{
+	cout << "1. Append a Student\n";
+	cout << "2. Insert a Student\n";
+	cout << "3. Delete a Student by Index\n";
+	cout << "4. Delete a Student by Name\n";
+	cout << "5. Delete list\n";
+	cout << "6. Display Students\n";
+	cout << "7. Reverse the list\n";
+	cout << "8. Modify a Student\n";
+	cout << "9. Quit\n";
+	cout << endl;
+	cout << "Selection: ";
+}
+
+int main()
+{
+	LinkedList studentPopulation;
+	int choice;
+
+	int ID;
+	string Name;
+	string Major;
+	int Age;
+	int loc;
+
+	do
+	{
+		menu();
+		cin >> choice;
+
+		validate(choice, 1, 9);
+
+		switch (choice)
+		{
+		case Append:
+		{
+			cout << "Enter in the student's ID number: ";
+			cin >> ID;
+			cin.ignore();
+
+			cout << "Enter in the student's name: ";
+			getline(cin, Name);
+			cin.ignore();
+
+			cout << "Enter in the student's major: ";
+			getline(cin, Major);
+			cin.ignore();
+
+			cout << "Enter in the student's age: ";
+			cin >> Age;
+			Age = validate(Age, 0, 1000);
+			cout << endl;
+
+			studentPopulation.appendNode(ID, Name, Major, Age);
+			break;
+		}
+		case Insert:
+		{
+			cout << "Enter in the student's ID number: ";
+			cin >> ID;
+			cin.ignore();
+
+			cout << "Enter in the student's name: ";
+			getline(cin, Name);
+			cin.ignore();
+
+			cout << "Enter in the student's major: ";
+			getline(cin, Major);
+			cin.ignore();
+
+			cout << "Enter in the student's age: ";
+			cin >> Age;
+			Age = validate(Age, 0, 1000);
+
+			cout << "Enter in where you would want to insert the student: ";
+			cin >> loc;
+
+			studentPopulation.insertNode(ID, Name, Major, Age, loc);
+			cout << endl;
+			break;
+		}
+		case DeleteByIndex:
+		{
+			cout << "Enter in the student's location you would like to delete: ";
+			cin >> loc;
+
+			studentPopulation.deleteNode(loc);
+			cout << endl;
+			break;
+		}
+		case DeleteByName:
+		{
+			cout << "Enter in the student's name you would like to delete: ";
+			cin >> Name;
+			studentPopulation.deleteNode(Name);
+			cout << endl;
+			break;
+		}
+		case DeleteAll:
+		{
+			studentPopulation.deleteAll();
+			cout << endl;
+			break;
+		}
+		case Display:
+		{
+			studentPopulation.displayList();
+			cout << endl;
+			break;
+		}
+		case Reverse:
+		{
+			studentPopulation.reverse();
+			cout << endl;
+			break;
+		}
+		case Modify:
+		{
+			cout << "Enter the ID of the Student you would like to modify: ";
+			cin >> ID;
+			cout << endl;
+			studentPopulation.changeNode(ID);
+			break;
+		}
+		case Quit:
+			studentPopulation.displayCount();
+			break;
+		}
+
+	} while (choice != 8);
+
+	system("pause");
+	return 0;
+}
+
+int validate(int &num, int min, int max) {
+	while (cin.fail() || num < min || num > max) {
+		while (cin.fail()) {
+			cin.clear();
+			cin.ignore(1000, '\n');
+			cout << "Please enter a valid choice: ";
+			cin >> num;
+		}
+		while (num < min || num > max) {
+			cout << "Please enter a number between " << min << " and " << max << ": ";
+			cin >> num;
+		}
+	}
+	return num;
+}
