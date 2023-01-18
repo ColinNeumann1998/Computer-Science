@@ -1,0 +1,85 @@
+// Colin Neumann
+// 2/11/2019
+// Lab01 Part B
+
+#include <iostream>
+#include <iomanip>
+#include <string>
+#include <vector> //For vectors
+
+using namespace std;
+
+// Global Variables
+vector <string>animals;
+vector <int>age;
+string AnimalName;
+int AnimalAge;
+const char NEW_TAB = '\t';
+const string OrderofAnimals[] = { "1st", "2nd", "3rd", "4th", "5th" };
+
+
+
+int main()
+{
+	// Variables
+	int count = 0;
+	vector <string>animals;
+	vector <int>age;
+	string AnimalName;
+	int AnimalAge;
+	int MAX = 4;
+	const int COLUMN = 1;
+	const int ROW = 5;
+
+	// Welcome screen to show the user
+	cout << "Colin Neumann" << endl;
+	cout << "Major: Cybersecurity" << endl;
+	cout << "Starting Lab01" << endl;
+	cout << endl;
+
+	// User enters the animals name and age
+	for (int i = 0; i <= MAX; i++)
+	{
+		// User enters the animal
+		cout << "Enter animal " << OrderofAnimals[i] << " name: ";
+		cin >> AnimalName;
+		animals.push_back(AnimalName);
+		if (AnimalName == "Stop" || AnimalName == "STOP" || AnimalName == "stop")
+		{
+			break;
+		}
+		else
+		{
+			animals[i] = AnimalName;
+		}
+
+		// User enters the animals age
+		cout << "Enter animal " << OrderofAnimals[i] << " age: ";
+		cin >> AnimalAge;
+		age.push_back(AnimalAge);
+		count++;
+
+		cout << endl;
+	}
+	cout << endl;
+
+	// Displays the final animals and thier ages for the user to see
+	cout << "lab01 by Colin Neumann  Cybersecurity";
+	cout << endl;
+	cout << endl;
+	cout << "Animals" << endl;
+	cout << "#" << NEW_TAB << "Name" << NEW_TAB << "age" << endl;
+
+	int Names = animals.size();
+	for (int i = 0; i < count; i++)
+	{
+		// Displays the animals and thier ages in a table
+		cout << i;
+		cout << NEW_TAB;
+		cout << animals[i];
+		cout << NEW_TAB;
+		cout << age[i];
+		cout << endl;
+	}
+	cout << system("pause");
+}
