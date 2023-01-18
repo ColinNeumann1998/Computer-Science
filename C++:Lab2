@@ -1,0 +1,174 @@
+// Colin Neumann
+// February 18th 2019
+// LAB02
+
+#include <string>
+#include <iostream>
+#include <vector>
+#include <iomanip>
+
+using namespace std;
+
+// Global Constants
+const int NUM_MEMBERS = 3;
+const int NUM_TEAMS = 4;
+const char NEW_TAB = '\t';
+
+
+// Struct
+struct TeamS
+{
+	int ID;
+	string MEMBERS[NUM_MEMBERS];
+};
+
+// Prototypes
+void Initialize(vector <TeamS> & TeamV, const int id[],
+	const string m[][NUM_MEMBERS], int arraySize);
+void printList(const vector <TeamS> & TeamV);
+void menu();
+void add(vector <TeamS> & TeamV);
+int search(const vector <TeamS> & TeamV, int id);
+
+int main()
+{
+	vector<TeamS>TeamV;
+
+	const int ID[NUM_TEAMS] = { 123, 321, 456, 789 };
+	const string MEMBERS[NUM_TEAMS][NUM_MEMBERS] =
+	{
+		{ "Sally", "Joe", "John" },
+	{ "Chris", "Kevin", "James" },
+	{ "Tom", "Kim", "Emily" },
+	{ "Jill", "Jacob", "Jim" }
+	};
+
+	int UserChoice;
+	int location;
+
+	Initialize(TeamV, ID, MEMBERS, NUM_TEAMS);
+	printList(TeamV);
+	do
+	{
+		menu();
+		cout << endl;
+		cout << "Please make a selection: ";
+		cin >> UserChoice;
+		if (UserChoice == 1)
+		{
+			printList(TeamV);
+			cout << endl;
+		}
+		else if (UserChoice == 2)
+		{
+			add(TeamV);
+			cout << endl;
+		}
+		else if (UserChoice == 3)
+		{
+			int searchID;
+			cout << "Please type your ID number: ";
+			cin >> searchID;
+			location = search(TeamV, searchID);
+			for (int j = 0; j < NUM_MEMBERS; j++)
+			{
+				cout << TeamV[location].MEMBERS[j];
+				cout << NEW_TAB;
+
+			}
+			cout << endl;
+		}
+		cout << endl;
+
+	} while (UserChoice != 4);
+
+	cout << "Lab 2 written by Colin Neumann has concluded. " << endl;
+
+	system("pause");
+	return 0;
+}
+
+void Initialize(vector <TeamS> & TeamV, const int id[], const string m[][NUM_MEMBERS], int arraySize)
+{
+	TeamS tempTeam;
+	cout << "Starting Initialization..." << endl;
+	cout << "Ending Initialization..." << endl;
+	cout << endl;
+
+	for (int i = 0; i < NUM_TEAMS; i++)
+	{
+		tempTeam.ID = id[i];
+
+		for (int c = 0; c < NUM_MEMBERS; c++)
+		{
+			tempTeam.MEMBERS[c] = m[i][c];
+		}
+		TeamV.push_back(tempTeam);
+	}
+	system("pause");
+	return;
+}
+
+void printList(const vector <TeamS> & TeamV)
+{
+	int TempSize = TeamV.size();
+
+	for (int i = 0; i < TempSize; i++)
+	{
+		cout << "Information for team " << i << endl;
+		cout << "ID:    " << TeamV[i].ID;
+		cout << NEW_TAB;
+
+		for (int c = 0; c < NUM_MEMBERS; c++)
+		{
+			cout << TeamV[i].MEMBERS[c];
+			cout << NEW_TAB;
+		}
+		cout << endl;
+	}
+	return;
+}
+
+void menu()
+{
+	cout << "Enter 1 to see a list of teams." << endl;
+	cout << "Enter 2 to add a team to the list." << endl;
+	cout << "Enter 3 to search for a team using an ID." << endl;
+	cout << "Enter 4 to end the program.";
+}
+
+void add(vector <TeamS> & TeamV)
+{
+	TeamS Temp;
+
+	for (int i = 0; i < 1; i++)
+	{
+		cout << "Enter the Team ID: " << endl;
+		cin >> Temp.ID;
+		for (int c = 0; c < NUM_MEMBERS; c++)
+		{
+			cout << "Enter the member " << (c + 1) << ": ";
+			cin >> Temp.MEMBERS[c];
+		}
+		TeamV.push_back(Temp);
+	}
+	system("pause");
+	return;
+}
+
+int search(const vector <TeamS> & TeamV, int id)
+{
+	cout << "Infortmation for team: " << id << ": " << endl;
+	int TempSize = TeamV.size();
+	int location = 0;
+	for (int f = 0; f < NUM_TEAMS; f++)
+	{
+		if (TeamV[f].ID == id)
+		{
+			location = f;
+			break;
+		}
+	}
+
+	return(location);
+}
